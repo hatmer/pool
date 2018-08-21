@@ -14,10 +14,14 @@ let fetch (url_str : string) (name_str : string) =
     let http_code = Cohttp.Response.status res in 
     match http_code with
     | `OK -> Cohttp_async.Body.to_string body
-    | _ -> return ""    
+    | _ -> return "500"    
 ;;
 
-let r = 
-    try fetch failurl "worker"
-    with _ -> return ""
+
+let get_orders server_url = 
+  try_with (fun () -> fetch server_url "b")
+  >>| function
+    | Ok s -> s
+    | Error _ -> "400"
 ;;
+
