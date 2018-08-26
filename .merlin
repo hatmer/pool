@@ -51,6 +51,7 @@ B /home/hatmer/.opam/4.06.1/lib/seq
 B /home/hatmer/.opam/4.06.1/lib/sexplib
 B /home/hatmer/.opam/4.06.1/lib/sexplib/unix
 B /home/hatmer/.opam/4.06.1/lib/sexplib0
+B /home/hatmer/.opam/4.06.1/lib/sha
 B /home/hatmer/.opam/4.06.1/lib/spawn
 B /home/hatmer/.opam/4.06.1/lib/splittable_random
 B /home/hatmer/.opam/4.06.1/lib/stdio
@@ -114,6 +115,7 @@ S /home/hatmer/.opam/4.06.1/lib/seq
 S /home/hatmer/.opam/4.06.1/lib/sexplib
 S /home/hatmer/.opam/4.06.1/lib/sexplib/unix
 S /home/hatmer/.opam/4.06.1/lib/sexplib0
+S /home/hatmer/.opam/4.06.1/lib/sha
 S /home/hatmer/.opam/4.06.1/lib/spawn
 S /home/hatmer/.opam/4.06.1/lib/splittable_random
 S /home/hatmer/.opam/4.06.1/lib/stdio
