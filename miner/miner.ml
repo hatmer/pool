@@ -22,7 +22,10 @@ let hash block =
     block |> Sha256.string |> Sha256.to_bin |> Sha256.string |> Sha256.to_hex
 ;;
 
-let url = "https://127.0.0.1:8000/fetch?val=hi";;
+(* keep track of best hash found for ppow *)
+
+let url = "https://127.0.0.1:8000/submit?val=hi";;
+
 
 let () = 
     print_endline (hash "hello");

@@ -25,27 +25,6 @@ class Task_selector: # TODO run simulations of this algorithm, add to paper
         return self.num % MAX_NONCE
 
 
-from protocol import Connection_manager
-import asyncio
-
-class Client:
-    """ Module for high-level interaction with Bitcoin network 
-          - logging
-          - exception handling
-          - interaction logic
-    """
-
-    def __init__(self):
-        self.cm = Connection_manager()
-        self.peers = []
-
-    """async def test(self):
-        peer = ("127.0.0.1", 8000)
-        s = await self.cm.open(peer)
-        res = await cm.handshake(s,peer)
-        cm.close(s)
-        return res
-      """  
 
 
 
