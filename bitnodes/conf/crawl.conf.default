@@ -22,7 +22,7 @@ seeders =
     seed.bitnodes.io
 
 # Number of concurrent workers (greenlets)
-workers = 7
+workers = 1
 
 # Print debug output
 debug = True
@@ -49,7 +49,7 @@ services = 0
 relay = 0
 
 # Socket timeout
-socket_timeout = 30
+socket_timeout = 10
 
 # Run cron tasks every given interval
 cron_delay = 10

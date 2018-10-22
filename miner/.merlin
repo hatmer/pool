@@ -21,9 +21,11 @@ B /home/hatmer/.opam/4.06.1/lib/conduit-async
 B /home/hatmer/.opam/4.06.1/lib/core
 B /home/hatmer/.opam/4.06.1/lib/core_kernel
 B /home/hatmer/.opam/4.06.1/lib/core_kernel/base_for_tests
+B /home/hatmer/.opam/4.06.1/lib/cstruct
 B /home/hatmer/.opam/4.06.1/lib/ctypes
 B /home/hatmer/.opam/4.06.1/lib/fieldslib
 B /home/hatmer/.opam/4.06.1/lib/fmt
+B /home/hatmer/.opam/4.06.1/lib/hex
 B /home/hatmer/.opam/4.06.1/lib/integers
 B /home/hatmer/.opam/4.06.1/lib/ipaddr
 B /home/hatmer/.opam/4.06.1/lib/ipaddr/unix
@@ -85,9 +87,11 @@ S /home/hatmer/.opam/4.06.1/lib/conduit-async
 S /home/hatmer/.opam/4.06.1/lib/core
 S /home/hatmer/.opam/4.06.1/lib/core_kernel
 S /home/hatmer/.opam/4.06.1/lib/core_kernel/base_for_tests
+S /home/hatmer/.opam/4.06.1/lib/cstruct
 S /home/hatmer/.opam/4.06.1/lib/ctypes
 S /home/hatmer/.opam/4.06.1/lib/fieldslib
 S /home/hatmer/.opam/4.06.1/lib/fmt
+S /home/hatmer/.opam/4.06.1/lib/hex
 S /home/hatmer/.opam/4.06.1/lib/integers
 S /home/hatmer/.opam/4.06.1/lib/ipaddr
 S /home/hatmer/.opam/4.06.1/lib/ipaddr/unix

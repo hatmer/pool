@@ -36,11 +36,15 @@ def log_access(request):
     print("path: ", request.path)
     print("query_string: ", request.query_string)
     print("headers: ", request.headers)
+    print("args: ", request.args)
 
     # TODO log info to disk?
 
 
 # Miner
+
+def convert_endianess(txn):
+    return txn.decode('hex')[::-1].encode('hex')
 
 @app.route('/fetch', methods=['GET'])
 async def provide_task(request):
@@ -49,19 +53,19 @@ async def provide_task(request):
     log_access(request)
     
     # verify user agent
-    worker_id = request.headers['user-agent']
+    #worker_id = request.headers['user-agent']
     
-    if not worker_id.startswith('worker'):
-        return json({}, status=400) # exit because bad user agent
+    #if not worker_id.startswith('worker'):
+    #    return json({}, status=400) # exit because bad user agent
 
     # construct block header
     
-    version = 2 # block version number
-    hashPrevBlock = "" # 256 bits
-    hashMerkleRoot = "" # 256 bits
-    current_time = int(time())
+    #version = 2 # block version number
+    #hashPrevBlock = "" # 256 bits
+    #hashMerkleRoot = "" # 256 bits
+    #current_time = int(time())
     #bits = # target in compact format
-    nonce = 0
+    #nonce = 0
     
 
     coinbasetxn = "02000000011da9283b4ddf8d89eb996988b89ead56cecdc44041ab38bf787f1206cd90b51e0000000000ffffffff01405dc6000000000017a914dce7a4e41cdb15c9f88ed98d5474e944ca896a038700000000"

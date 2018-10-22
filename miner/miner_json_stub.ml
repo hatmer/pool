@@ -1,4 +1,5 @@
 open Async;;
+open Yojson.Basic.Util;;
 
 (* Make request and return response or status code *)
 
@@ -41,8 +42,8 @@ let bin_to_hex binString =
 let rec calculateMerkleRow txns = 
     match txns with
     | [] -> []
-    | a::b::lst -> dHash (String.concat "" [a; b]) :: calculateMerkleRow lst
-    | a::[] -> [dHash(String.concat "" [a; a])]
+    | a::b::lst -> dHash (String.concat ~sep:"" [a; b]) :: calculateMerkleRow lst
+    | a::[] -> [dHash(String.concat ~sep:"" [a; a])]
 ;;
 
 let rec calculateMerkleRoot txns = 
@@ -51,7 +52,7 @@ let rec calculateMerkleRoot txns =
     | a::b::lst -> calculateMerkleRoot (calculateMerkleRow txns)
     | [] -> ""
 ;;
-(*
+
 type header = {
     version : int;
     hashPrevBlock : string;
@@ -71,7 +72,7 @@ let header_of_json j = {
     bits = j |> member "bits" |> to_int;
     nonce = 0;
 }
-*)
+
 
 
 
@@ -103,14 +104,13 @@ let initial_request = "{'id': 0, 'method': 'getblocktemplate', 'params': [{'capa
 (*request "https://127.0.0.1:8000/fetch" "GET" "hi";;*)
 request "https://127.0.0.1:8000/fetch" "GET" initial_request;;
 
-(* todo: poll difficulty url, if new then fetch new premade header, hash+check+update nonce, send *)
-
 let () = 
 
-    (*request "https://127.0.0.1:8000/fetch" "GET" initial_request >>| print_endline;*)
-    (*>>| try print_endline (*<do something with input>*)
-        with Type_error (s, _) -> failwith ("Received bad input from server: " ^ s);
-    *)
+    request "https://127.0.0.1:8000/fetch" "GET" initial_request
+    >>| Yojson.Basic.from_string >>| member "result" >>|
+    try header_of_json
+    with Type_error (s, _) -> failwith ("Received bad json from server: " ^ s);
+    
     don't_wait_for (exit 0);
     Core.never_returns (Scheduler.go ())
 ;;

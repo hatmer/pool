@@ -132,26 +132,50 @@ def connect(node):
 
     
     if len(handshake_msgs) > 0:
+        logging.debug("received handshake")
         version_msg = handshake_msgs[0]
         seen_height = version_msg.get('height', 0)
+        logging.debug("received height: {}".format(seen_height))
 
-        # Get latest block
+        # Get latest block headers and send to 
         if seen_height > state.height:
-            block_hashes = 
-            last_block_hash =
-            conn.getblocks(block_hashes, last_block_hash)
+            
+            try:
+                logging.debug("requesting headers from {}...".format(node))
+                conn.getheaders(state.block_headers, last_block_hash=None, block=False)
+            except (ProtocolError, ConnectionError, socket.error) as err:
+                logging.debug("%s: %s", conn.to_addr, err)
 
-        # Get new txns
-    
+            wait = 0
+            while wait < CONF['socket_timeout']:
+                wait += 1
+                gevent.sleep(0.3)
+                logging.debug("waiting for messages...")
 
-        # Get addrs
+                try:
+                    msgs = conn.get_messages(commands=["headers"])
+                except (ProtocolError, ConnectionError, socket.error) as err:
+                    logging.debug("%s: %s", conn.to_addr, err)
+                    break
 
-        try:
-            conn.getaddr(block=False)
-        except (ProtocolError, ConnectionError, socket.error) as err:
-            logging.debug("%s: %s", conn.to_addr, err)
+                if msgs:
+                    logging.debug("recieved headers: {}".format(msgs))
+                    if header_lock.wait(3):
+                        state.block_headers.update(msgs)
+                        logging.debug("updated block headers successfully")
+                    else:
+                        logging.debug("failed to update block headers")
+                    break
 
+
+        # Otherwise get addrs
+        
         else:
+            try:
+                conn.getaddr(block=False)
+            except (ProtocolError, ConnectionError, socket.error) as err:
+                logging.debug("%s: %s", conn.to_addr, err)
+
             addr_wait = 0
             while addr_wait < CONF['socket_timeout']:
                 addr_wait += 1
@@ -165,30 +189,44 @@ def connect(node):
 
                 if msgs and any([msg['count'] > 1 for msg in msgs]):
                     addr_msgs = msgs
+                    (num_peers, peers) = extract_addrs(addr_msg, now)
+                    from_services = version_msg.get('services', 0)
+                    if from_services != services:
+                        logging.debug("%s Expected %d, got %d for services", conn.to_addr, services, from_services)
+                        node = (address, port, from_services)
+                    
+                    if len(addr_msgs) > 1:
+                        if state.addr_lock.wait(2):
+                            state.addr_lock.acquire()
+                            state.addrs.update(peers)
+                            state.addrs.add(node) # re-add successful peer
+                            state.addr_lock.release()
+                            logging.debug("updated addrs successfully")
+                        else:
+                            logging.debug("failed to update addrs")
                     break
 
         # Process version msg
         #version_msg = handshake_msgs[0]
-        from_services = version_msg.get('services', 0)
-        if from_services != services:
-            logging.debug("%s Expected %d, got %d for services", conn.to_addr,
-                          services, from_services)
-            node = (address, port, from_services)
+        #from_services = version_msg.get('services', 0)
+        #if from_services != services:
+        #    logging.debug("%s Expected %d, got %d for services", conn.to_addr,
+        #                  services, from_services)
+        #    node = (address, port, from_services)
         
 
         # Store height
-
-        #redis_pipe.setex(height_key, CONF['max_age'],
-        #                 version_msg.get('height', 0))
-
- #       seen_height = version_msg.get('height', 0) 
-
-        # Extract addr msgs
-        now = int(time.time())
-        (num_peers, peers) = extract_addrs(addr_msg, now)
-        logging.debug("%s Peers: %d", conn.to_addr, num_peers)
+        if seen_height > state.height:
+            if state.height_lock.wait(3):
+                state.height_lock.acquire()
+                state.height = seen_height
+                state.height_lock.release()
+                logging.info("new height: {}".format(seen_height))
+            else:
+                logging.error("failed to update height: {}".format(seen_height))
+    
         
-        
+    logging.debug("closing connection")
     conn.close()
     
 
@@ -227,22 +265,18 @@ def task():
     Assigned to a worker to retrieve (pop) a node from the crawl set and
     attempt to establish connection with a new node.
     """
-    # select task
-    if not state.tasks.empty():
-        task = state.tasks.get()
-    else:
-        return
 
     # select peer address
-    if not state.addrs.empty():
+    if len(state.addrs):
 
-        node = state.addrs.get()
+        if state.addr_lock.wait(5):
+            node = state.addrs.pop()
 
-        # Skip IPv6 node
-        if ":" in node[0] and not CONF['ipv6']:
-            return
+            # Skip IPv6 node
+            if ":" in node[0] and not CONF['ipv6']:
+                return
 
-        connect(node,task)
+            connect(node)
 
 
 
@@ -430,10 +464,7 @@ def main(argv):
 
     # Initialize global conf
     init_conf(argv)
-    state.addrs.put(("127.0.0.1", "18333", 1))
-
-    # Initialize tasks list TODO get from conf
-    state.tasks.put("addr", "data", "block")
+    state.addrs.add(("127.0.0.1", "18333", 1))
 
     # Initialize logger
     loglevel = logging.INFO
@@ -442,10 +473,10 @@ def main(argv):
 
     logformat = ("[%(process)d] %(asctime)s,%(msecs)05.1f %(levelname)s "
                  "(%(funcName)s) %(message)s")
-    logging.basicConfig(level=loglevel,
-                        format=logformat,
-                        filename=CONF['logfile'],
-                        filemode='a')
+    logging.basicConfig(level=loglevel)#,
+                        #format=logformat,
+                        #filename=CONF['logfile'],
+                        #filemode='a')
     print("Log: {}, press CTRL+C to terminate..".format(CONF['logfile']))
 
     #update_excluded_networks()
@@ -459,7 +490,7 @@ def main(argv):
         workers.append(gevent.spawn(task))
     
     logging.info("Workers: %d", len(workers))
-    gevent.joinall(workers)
+    result = gevent.joinall(workers)
 
     # TODO consolidate return values (?) and restart
     #state.height = max(heights)

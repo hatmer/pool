@@ -1,14 +1,15 @@
-from gevent.lock import BoundedBoundedSemaphore
-from gevent.queue import Queue
+from gevent.lock import BoundedSemaphore
 
 class State:
     def __init__(self):
-        self.addrs = Queue()
-        self.latest_block = ""
-        self.recent_txns = []
+        self.block_headers = set()
+        #self.recent_txns = []
         self.height = 0
+        self.addrs = set()
+        
         self.height_lock = BoundedSemaphore()
-       # self.block_lock = BoundedSemaphore()
+        self.header_lock = BoundedSemaphore()
+        self.addr_lock = BoundedSemaphore()
        # self.txns_lock = BoundedSemaphore()
 
 

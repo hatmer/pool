@@ -283,6 +283,9 @@ class Serializer(object):
             last_block_hash = kwargs['last_block_hash']
             payload = self.serialize_getblocks_payload(block_hashes,
                                                        last_block_hash)
+        #elif command == "getheaders":
+         #   payload = self.serialize_getheaders_payload()
+
         elif command == "headers":
             headers = kwargs['headers']
             payload = self.serialize_block_headers_payload(headers)
@@ -830,6 +833,7 @@ class Connection(object):
                 self.verack()  # respond to version immediately
             msgs.append(msg)
         if len(msgs) > 0 and commands:
+            print(msgs)
             msgs[:] = [m for m in msgs if m.get('command') in commands]
         return msgs
 
@@ -926,7 +930,7 @@ class Connection(object):
         msgs = self.get_messages(commands=["inv"])
         return msgs
 
-    def getheaders(self, block_hashes, last_block_hash=None):
+    def getheaders(self, block_hashes, last_block_hash=None, block=True):
         if last_block_hash is None:
             last_block_hash = "0" * 64
 
@@ -936,6 +940,8 @@ class Connection(object):
                                             block_hashes=block_hashes,
                                             last_block_hash=last_block_hash)
         self.send(msg)
+        if not block:
+            return None
 
         # <<< [headers]..
         gevent.sleep(1)
