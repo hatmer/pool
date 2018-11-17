@@ -1,4 +1,5 @@
 open Async;;
+open Yojson.Basic.Util;;
 
 (* Make request and return response or status code *)
 
@@ -51,7 +52,22 @@ let rec calculateMerkleRoot txns =
     | a::b::lst -> calculateMerkleRoot (calculateMerkleRow txns)
     | [] -> ""
 ;;
-(*
+
+
+(* Increment X-bit integer field *)
+let increment blob =
+5;;
+
+
+(* loop and keep track of best hash found for ppow *)
+let bruteForceSearch header difficulty = 
+    let best_hash = "" in
+    let nonce = 0 in
+    (* Assemble header, increment nonce, and hash *)
+5;;
+
+
+(* Fetch batch from server, extract header and difficulty *)
 type header = {
     version : int;
     hashPrevBlock : string;
@@ -65,31 +81,12 @@ type header = {
 let header_of_json j = {
     version = j |> member "version" |> to_int;
     hashPrevBlock = j |> member "previousblockhash" |> to_string;
-    hashMerkleRoot = calculateMerkleRoot ((j |> member "coinbasetxn" 
+    hashMerkleRoot = calculateMerkleRoot ((j |> member "coinbasetxn"
                                              |> member "data" |> to_string) :: []);
     currentTime = j |> member "curtime" |> to_int;
     bits = j |> member "bits" |> to_int;
     nonce = 0;
 }
-*)
-
-
-
-(* Increment coinbase txn nonce *)
-
-(*
-    # construct block header using values from template
-
-    version = 2 # block version number
-    hashPrevBlock = "" # 256 bits
-    hashMerkleRoot = "" # 256 bits
-    time = int(time())
-    #bits = # target in compact format
-    nonce = 0
-*)
-
-(* hash, update nonce, repeat *)
-(* keep track of best hash found for ppow *)
 
 
 (* share submit format:*)
@@ -103,14 +100,11 @@ let initial_request = "{'id': 0, 'method': 'getblocktemplate', 'params': [{'capa
 (*request "https://127.0.0.1:8000/fetch" "GET" "hi";;*)
 request "https://127.0.0.1:8000/fetch" "GET" initial_request;;
 
-(* todo: poll difficulty url, if new then fetch new premade header, hash+check+update nonce, send *)
-
 let () = 
-
-    (*request "https://127.0.0.1:8000/fetch" "GET" initial_request >>| print_endline;*)
-    (*>>| try print_endline (*<do something with input>*)
-        with Type_error (s, _) -> failwith ("Received bad input from server: " ^ s);
-    *)
+    request "https://127.0.0.1:8000/fetch" "GET" initial_request
+    >>| Yojson.Basic.from_string >>| member "result" >>| header_of_json 
+    >>| (* header-> ppow string *) >>| print_endline;
+    
     don't_wait_for (exit 0);
     Core.never_returns (Scheduler.go ())
 ;;

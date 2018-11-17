@@ -1,5 +1,5 @@
 ;; This declares the miner executable implemented by miner.ml
 (executable
  (name miner)
- (libraries core async async_ssl cohttp cohttp.async uri sha hex)
+ (libraries core async async_ssl cohttp cohttp.async uri sha hex yojson)
 )

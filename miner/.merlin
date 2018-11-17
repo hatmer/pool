@@ -13,6 +13,7 @@ B /home/hatmer/.opam/4.06.1/lib/base/shadow_stdlib
 B /home/hatmer/.opam/4.06.1/lib/base64
 B /home/hatmer/.opam/4.06.1/lib/bin_prot
 B /home/hatmer/.opam/4.06.1/lib/bin_prot/shape
+B /home/hatmer/.opam/4.06.1/lib/biniou
 B /home/hatmer/.opam/4.06.1/lib/bytes
 B /home/hatmer/.opam/4.06.1/lib/cohttp
 B /home/hatmer/.opam/4.06.1/lib/cohttp-async
@@ -23,6 +24,7 @@ B /home/hatmer/.opam/4.06.1/lib/core_kernel
 B /home/hatmer/.opam/4.06.1/lib/core_kernel/base_for_tests
 B /home/hatmer/.opam/4.06.1/lib/cstruct
 B /home/hatmer/.opam/4.06.1/lib/ctypes
+B /home/hatmer/.opam/4.06.1/lib/easy-format
 B /home/hatmer/.opam/4.06.1/lib/fieldslib
 B /home/hatmer/.opam/4.06.1/lib/fmt
 B /home/hatmer/.opam/4.06.1/lib/hex
@@ -63,6 +65,7 @@ B /home/hatmer/.opam/4.06.1/lib/uchar
 B /home/hatmer/.opam/4.06.1/lib/uri
 B /home/hatmer/.opam/4.06.1/lib/uri/services
 B /home/hatmer/.opam/4.06.1/lib/variantslib
+B /home/hatmer/.opam/4.06.1/lib/yojson
 B _build/default/.miner.eobjs
 S /home/hatmer/.opam/4.06.1/lib/astring
 S /home/hatmer/.opam/4.06.1/lib/async
@@ -79,6 +82,7 @@ S /home/hatmer/.opam/4.06.1/lib/base/shadow_stdlib
 S /home/hatmer/.opam/4.06.1/lib/base64
 S /home/hatmer/.opam/4.06.1/lib/bin_prot
 S /home/hatmer/.opam/4.06.1/lib/bin_prot/shape
+S /home/hatmer/.opam/4.06.1/lib/biniou
 S /home/hatmer/.opam/4.06.1/lib/bytes
 S /home/hatmer/.opam/4.06.1/lib/cohttp
 S /home/hatmer/.opam/4.06.1/lib/cohttp-async
@@ -89,6 +93,7 @@ S /home/hatmer/.opam/4.06.1/lib/core_kernel
 S /home/hatmer/.opam/4.06.1/lib/core_kernel/base_for_tests
 S /home/hatmer/.opam/4.06.1/lib/cstruct
 S /home/hatmer/.opam/4.06.1/lib/ctypes
+S /home/hatmer/.opam/4.06.1/lib/easy-format
 S /home/hatmer/.opam/4.06.1/lib/fieldslib
 S /home/hatmer/.opam/4.06.1/lib/fmt
 S /home/hatmer/.opam/4.06.1/lib/hex
@@ -129,5 +134,6 @@ S /home/hatmer/.opam/4.06.1/lib/uchar
 S /home/hatmer/.opam/4.06.1/lib/uri
 S /home/hatmer/.opam/4.06.1/lib/uri/services
 S /home/hatmer/.opam/4.06.1/lib/variantslib
+S /home/hatmer/.opam/4.06.1/lib/yojson
 S .
 FLG -w @a-4-29-40-41-42-44-45-48-58-59-60-40 -strict-sequence -strict-formats -short-paths -keep-locs
