@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
 from sanic import Sanic
-from sanic.response import json, html, raw
+from sanic.response import html, text
 from sanic.exceptions import NotFound
 
 import asyncio
-from time import time
+from datetime import date
 
 import requests
+from requests.auth import HTTPDigestAuth
 import json
+
 
 ### Config ###
 
@@ -18,16 +20,12 @@ app.static('/', './www')
 with open('./www/404.html', 'r') as fh:
     notfound = fh.read()
 
-
-### APP ### 
-
-
-## Variables ##
-
-url = 'http://51.254.38.216:18081/json_rpc'
+url = 'http://188.166.36.137:18081/json_rpc'
 headers = {'content-type': 'application/json'}
+auth = ('hatmer', 'batteriet55')
 
-## Helper functions ##
+
+### Helper functions ###
 
 def log_access(request):
     """ log all requests to server """
@@ -40,11 +38,7 @@ def log_access(request):
     # TODO log info to disk?
 
 
-## Miner ##
-
-def convert_endianess(txn):
-    return txn.decode('hex')[::-1].encode('hex')
-
+### Miner ###
 
 async def get_work():
     """ fetch job for miner via RPC request to node """
@@ -54,39 +48,58 @@ async def get_work():
       "id": "0",
       "method": "get_block_template",
       "params": {
-          "wallet_address": "",
+          "wallet_address": "44GBHzv6ZyQdJkjqZje6KLZ3xSyN1hBSFAnLP6EAqJtCRVzMzZmeXTC2AHKDS9aEDTRKmo6a6o9r9j86pYfhCWDkKjbtcns",
           "reserve_size": 60
           }
       }
-        
-    response = requests.post(url, data=json.dumps(payload), headers=headers)
-    return response
+
+    try:      
+        response = requests.post(url, auth=HTTPDigestAuth('hatmer', 'batteriet55'), data=json.dumps(payload), headers=headers)
+        print("response from node OK: ", response)
+        print(response.text)
+    except:
+        print("could not fetch blocktemplate from node")
+        response = "500 - internal error"
+
+    # extract blockhashing blob and difficulty
+#    jresp = response.json()
+
+    #result = jresp['result']
+    #blob = result['blockhashing_blob']
+    #difficulty = result['difficulty']
+    # TODO get number of zeros from difficulty
+
+    #return blob + "," + difficulty
     
 
-@app.route("/mine/<coinaddr>", methods=['GET'])
+@app.route("/fetch", methods=['GET'])
 async def send_work(request):
     """ handle requests from miners """
-
     # log access
+    log_access(request)
+
     # log Timestamp:IP:coinaddr
+    
+    # TODO return blob, difficulty
     response = await get_work()
-    return json(response)
+    return text(response)
 
 
-@app.route("/submit/<coinaddr>", methods=['POST'])
-async def process_share(request):
+@app.route("/submit", methods=['POST'])
+async def process_share(request, addr):
     """ handle share submits from miners """
-    # TODO log access
+    log_access(request)
     try:
-        share = request.args
+        share = request.args['share']
+        payout_address = request.args['addr']
         print("processing share: {}".format(share))
     except Exception as e:
         print("share not received")
 
-    # TODO validate input (is from recently seen IP, is json, is correct)
+    # TODO 2.0 validate input (is from recently seen IP, is json, is correct)
 
 
-    # send share directly to node
+    # send share to node
     retry_count = 10
     while retry_count > 0:
         response = await requests.post(url, data=share, headers=headers)
@@ -96,9 +109,12 @@ async def process_share(request):
 
         retry_count -= 1
 
-    # TODO notify me of share
+    # record share event
+    with open("shares.txt", 'a') as fh:
+        msg = str(date()) + "," + payout_address + "," + share
+        fh.append(msg)
 
-    return raw("ok")
+    return text("ok")
 
 
 ### App Config ###
