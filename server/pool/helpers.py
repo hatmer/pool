@@ -13,7 +13,6 @@ class Task_selector: # TODO run simulations of this algorithm, add to paper
         self.workers_served = 0
 
     def next(self, ID):
-
         self.workers_served += 1
         if self.workers_served > self.num_clients_last_round: # served all intervals
             self.num -= self.step / 2 # stagger the intervals
@@ -21,7 +20,6 @@ class Task_selector: # TODO run simulations of this algorithm, add to paper
             self.step *= -1 # go back in the opposite direction
 
         self.num += self.step
-
         return self.num % MAX_NONCE
 
 
